@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -11,27 +12,27 @@ import (
 type (
 	// Remote defines the server parameters
 	Remote struct {
-		Server	string // URL of ownCloud server. No /remote[...]
-		Folder	string // Folder where to store files
+		Server string // URL of ownCloud server. No /remote[...]
+		Folder string // Folder where to store files
 	}
 
 	// Local defines the local files parameters
 	Local struct {
-		Folder	string // Local folder to upload
-		Files	string // Local files to upload
+		Folder string // Local folder to upload
+		Files  string // Local files to upload
 	}
 
 	// Auth handles authentification
 	Auth struct {
-		User	string // ownCloud username
-		Pass	string // ownCloud password
+		User string // ownCloud username
+		Pass string // ownCloud password
 	}
 
 	// Plugin defines the KiCad plugin parameters
 	Plugin struct {
-		Remote	Remote	// Remote configuration
-		Local	Local	// Local configuration
-		Auth	Auth	// Authentification
+		Remote Remote // Remote configuration
+		Local  Local  // Local configuration
+		Auth   Auth   // Authentification
 	}
 )
 
@@ -57,10 +58,13 @@ func (p Plugin) Exec() error {
 	}
 
 	// Add webdav url
-	var buffer bytes.Buffer
-	buffer.WriteString(p.Remote.Server)
-	buffer.WriteString("/remote.php/webdav/");
-	p.Remote.Server = buffer.String()
+	u, err := url.Parse(p.Remote.Server)
+	if err != nil {
+		return err
+	}
+
+	u.Path = path.Join(u.Path, "remote.php/webdav")
+	p.Remote.Server = u.String()
 
 	cmds = append(cmds, commandCONFIG(p.Auth))
 	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local))
@@ -90,18 +94,20 @@ func commandCONFIG(a Auth) *exec.Cmd {
 	buffer.WriteString("' > auth.conf")
 
 	return exec.Command(
-		buffer.String()
+		buffer.String(),
 	)
 }
 
 func commandUPLOAD(r Remote, l Local) *exec.Cmd {
 
+	u, _ := url.Parse(r.Server)
+	u.Path = path.Join(u.Path, r.Folder)
+
 	return exec.Command(
 		"mella",
-		"-i",
-		tgt.Input,
-		"-o",
-		tgt.Output,
+		"-c auth.conf",
+		path.Join(l.Folder, l.Files),
+		u.String(),
 	)
 }
 

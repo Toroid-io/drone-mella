@@ -47,6 +47,7 @@ func main() {
 			Name: "auth.pass",
 			Usage: "ownCloud password",
 			EnvVar: "OWNCLOUD_PASSWORD",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -68,7 +69,7 @@ func run(c *cli.Context) error {
 		Auth: Auth{
 			User: c.String("auth.user"),
 			Pass: c.String("auth.pass"),
-		}
+		},
 	}
 	
 	return plugin.Exec()
