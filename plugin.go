@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"os/exec"
@@ -88,15 +89,11 @@ func (p Plugin) Exec() error {
 func commandCONFIG(a Auth) *exec.Cmd {
 
 	var buffer bytes.Buffer
-	buffer.WriteString("echo '")
 	buffer.WriteString(a.User)
 	buffer.WriteString(":")
 	buffer.WriteString(a.Pass)
-	buffer.WriteString("' > auth.conf")
 
-	return exec.Command(
-		buffer.String(),
-	)
+	ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
 func commandUPLOAD(r Remote, l Local) *exec.Cmd {
