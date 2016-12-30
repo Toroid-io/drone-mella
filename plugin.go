@@ -68,7 +68,7 @@ func (p Plugin) Exec() error {
 	u.Path = path.Join(u.Path, "remote.php/webdav")
 	p.Remote.Server = u.String()
 
-	cmds = append(cmds, commandCONFIG(p.Auth))
+	genConfig(p.Auth)
 	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local))
 
 	// execute all commands in batch mode.
@@ -86,14 +86,14 @@ func (p Plugin) Exec() error {
 	return nil
 }
 
-func commandCONFIG(a Auth) *exec.Cmd {
+func genConfig(a Auth) error {
 
 	var buffer bytes.Buffer
 	buffer.WriteString(a.User)
 	buffer.WriteString(":")
 	buffer.WriteString(a.Pass)
 
-	ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
+	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
 func commandUPLOAD(r Remote, l Local) *exec.Cmd {
