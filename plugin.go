@@ -69,6 +69,7 @@ func (p Plugin) Exec() error {
 	p.Remote.Server = u.String()
 
 	genConfig(p.Auth)
+	cmds = append(cmds, commandTAR(p.Local))
 	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local))
 
 	// execute all commands in batch mode.
@@ -96,15 +97,33 @@ func genConfig(a Auth) error {
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
+func commandTAR(l Local) *exec.Cmd {
+
+	var buffer bytes.Buffer
+	buffer.WriteString(l.Folder)
+	buffer.WriteString(".tgz")
+
+	return exec.Command(
+		"tar",
+		"-czf",
+		buffer.String(),
+		path.Join(l.Folder, l.Files),
+	)
+}
+
 func commandUPLOAD(r Remote, l Local) *exec.Cmd {
 
 	u, _ := url.Parse(r.Server)
 	u.Path = path.Join(u.Path, r.Folder)
 
+	var buffer bytes.Buffer
+	buffer.WriteString(l.Folder)
+	buffer.WriteString(".tgz")
+
 	return exec.Command(
 		"mella",
 		"-c auth.conf",
-		path.Join(l.Folder, l.Files),
+		buffer.String(),
 		u.String(),
 	)
 }
