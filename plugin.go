@@ -69,6 +69,7 @@ func (p Plugin) Exec() error {
 	p.Remote.Server = u.String()
 
 	genConfig(p.Auth)
+	cmds = append(cmds, commandLS())
 	cmds = append(cmds, commandTAR(p.Local))
 	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local))
 
@@ -97,17 +98,26 @@ func genConfig(a Auth) error {
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
+func commandLS() *exec.Cmd {
+
+	return exec.Command(
+		"ls",
+		"-R",
+	)
+}
+
 func commandTAR(l Local) *exec.Cmd {
 
 	var buffer bytes.Buffer
+	buffer.WriteString("tar -czf ")
 	buffer.WriteString(l.Folder)
-	buffer.WriteString(".tgz")
+	buffer.WriteString(".tgz ")
+	buffer.WriteString(path.Join(l.Folder, l.Files))
 
 	return exec.Command(
-		"tar",
-		"-czf",
+		"/bin/bash",
+		"-c",
 		buffer.String(),
-		path.Join(l.Folder, l.Files),
 	)
 }
 
