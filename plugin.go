@@ -32,9 +32,10 @@ type (
 
 	// Plugin defines the KiCad plugin parameters
 	Plugin struct {
-		Remote Remote // Remote configuration
-		Local  Local  // Local configuration
-		Auth   Auth   // Authentification
+		Remote  Remote // Remote configuration
+		Local   Local  // Local configuration
+		Auth    Auth   // Authentification
+		Verbose bool   // Add -v to mella script
 	}
 )
 
@@ -69,9 +70,8 @@ func (p Plugin) Exec() error {
 	p.Remote.Server = u.String()
 
 	genConfig(p.Auth)
-	cmds = append(cmds, commandLS())
 	cmds = append(cmds, commandTAR(p.Local))
-	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local))
+	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local, p.Verbose))
 
 	// execute all commands in batch mode.
 	for _, cmd := range cmds {
@@ -94,16 +94,9 @@ func genConfig(a Auth) error {
 	buffer.WriteString(a.User)
 	buffer.WriteString(":")
 	buffer.WriteString(a.Pass)
+	buffer.WriteString('\n')
 
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
-}
-
-func commandLS() *exec.Cmd {
-
-	return exec.Command(
-		"ls",
-		"-R",
-	)
 }
 
 func commandTAR(l Local) *exec.Cmd {
@@ -114,6 +107,7 @@ func commandTAR(l Local) *exec.Cmd {
 	buffer.WriteString(".tgz ")
 	buffer.WriteString(path.Join(l.Folder, l.Files))
 
+	// Calling bash allows wildcard expansion in files
 	return exec.Command(
 		"/bin/bash",
 		"-c",
@@ -121,7 +115,7 @@ func commandTAR(l Local) *exec.Cmd {
 	)
 }
 
-func commandUPLOAD(r Remote, l Local) *exec.Cmd {
+func commandUPLOAD(r Remote, l Local, v bool) *exec.Cmd {
 
 	u, _ := url.Parse(r.Server)
 	u.Path = path.Join(u.Path, r.Folder)
@@ -130,9 +124,16 @@ func commandUPLOAD(r Remote, l Local) *exec.Cmd {
 	buffer.WriteString(l.Folder)
 	buffer.WriteString(".tgz")
 
+	verbose := ""
+	if v {
+		verbose = "-v"
+	}
+
 	return exec.Command(
 		"mella",
-		"-c auth.conf",
+		"-c",
+		"auth.conf",
+		verbose,
 		buffer.String(),
 		u.String(),
 	)
