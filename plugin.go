@@ -124,18 +124,16 @@ func commandUPLOAD(r Remote, l Local, v bool) *exec.Cmd {
 	buffer.WriteString(l.Folder)
 	buffer.WriteString(".tgz")
 
-	verbose := ""
+	args := []string{"-c", "auth.conf"}
 	if v {
-		verbose = "-v"
+		args = append(args, "-v")
 	}
+	args = append(args, buffer.String())
+	args = append(args, u.String())
 
 	return exec.Command(
 		"mella",
-		"-c",
-		"auth.conf",
-		verbose,
-		buffer.String(),
-		u.String(),
+		args...,
 	)
 }
 
