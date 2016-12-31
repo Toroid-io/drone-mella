@@ -30,11 +30,19 @@ type (
 		Pass string // ownCloud password
 	}
 
+	// Commit handles commit information
+	Commit struct {
+		Tag  string // tag if tag event
+		Sha  string // commit sha
+		Repo string // repo name
+	}
+
 	// Plugin defines the KiCad plugin parameters
 	Plugin struct {
 		Remote  Remote // Remote configuration
 		Local   Local  // Local configuration
 		Auth    Auth   // Authentification
+		Commit  Commit // Commit information
 		Verbose bool   // Add -v to mella script
 	}
 )
@@ -70,7 +78,7 @@ func (p Plugin) Exec() error {
 	p.Remote.Server = u.String()
 
 	genConfig(p.Auth)
-	cmds = append(cmds, commandTAR(p.Local))
+	cmds = append(cmds, commandTAR(p.Local, p.Commit))
 	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local, p.Verbose))
 
 	// execute all commands in batch mode.
@@ -99,11 +107,17 @@ func genConfig(a Auth) error {
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
-func commandTAR(l Local) *exec.Cmd {
+func commandTAR(l Local, c Commit) *exec.Cmd {
 
 	var buffer bytes.Buffer
 	buffer.WriteString("tar -czf ")
-	buffer.WriteString(l.Folder)
+	buffer.WriteString(c.Repo)
+	buffer.WriteString("_")
+	if c.Tag != "" {
+		buffer.WriteString(c.Tag)
+	} else {
+		buffer.WriteString(c.Sha[:7])
+	}
 	buffer.WriteString(".tgz ")
 	buffer.WriteString(path.Join(l.Folder, l.Files))
 

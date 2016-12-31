@@ -53,6 +53,21 @@ func main() {
 			Usage:  "be verbose",
 			EnvVar: "PLUGIN_VERBOSE",
 		},
+		cli.StringFlag{
+			Name:   "commit.tag",
+			Usage:  "commit tag",
+			EnvVar: "DRONE_TAG",
+		},
+		cli.StringFlag{
+			Name:   "commit.sha",
+			Usage:  "commit sha",
+			EnvVar: "DRONE_COMMIT_SHA",
+		},
+		cli.StringFlag{
+			Name:   "commit.repo",
+			Usage:  "repo name",
+			EnvVar: "DRONE_REPO_NAME",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -74,6 +89,11 @@ func run(c *cli.Context) error {
 		Auth: Auth{
 			User: c.String("auth.user"),
 			Pass: c.String("auth.pass"),
+		},
+		Commit: Commit{
+			Tag:  c.String("commit.tag"),
+			Sha:  c.String("commit.sha"),
+			Repo: c.String("commit.repo"),
 		},
 		Verbose: c.Bool("verbose"),
 	}
