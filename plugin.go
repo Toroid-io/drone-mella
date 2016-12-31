@@ -77,9 +77,19 @@ func (p Plugin) Exec() error {
 	u.Path = path.Join(u.Path, "remote.php/webdav")
 	p.Remote.Server = u.String()
 
+	var tgzFile bytes.Buffer
+	tgzFile.WriteString(p.Commit.Repo)
+	tgzFile.WriteString("_")
+	if p.Commit.Tag != "" {
+		tgzFile.WriteString(p.Commit.Tag)
+	} else {
+		tgzFile.WriteString(p.Commit.Sha[:7])
+	}
+	tgzFile.WriteString(".tgz")
+
 	genConfig(p.Auth)
-	cmds = append(cmds, commandTAR(p.Local, p.Commit))
-	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local, p.Verbose))
+	cmds = append(cmds, commandTAR(p.Local, tgzFile.String()))
+	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local, tgzFile.String(), p.Verbose))
 
 	// execute all commands in batch mode.
 	for _, cmd := range cmds {
@@ -107,42 +117,32 @@ func genConfig(a Auth) error {
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
-func commandTAR(l Local, c Commit) *exec.Cmd {
+func commandTAR(l Local, tgzFile string) *exec.Cmd {
 
-	var buffer bytes.Buffer
-	buffer.WriteString("tar -czf ")
-	buffer.WriteString(c.Repo)
-	buffer.WriteString("_")
-	if c.Tag != "" {
-		buffer.WriteString(c.Tag)
-	} else {
-		buffer.WriteString(c.Sha[:7])
+	tarCmd := []string{
+		"tar -czf",
+		tgzFile,
+		path.Join(l.Folder, l.Files),
 	}
-	buffer.WriteString(".tgz ")
-	buffer.WriteString(path.Join(l.Folder, l.Files))
 
 	// Calling bash allows wildcard expansion in files
 	return exec.Command(
 		"/bin/bash",
 		"-c",
-		buffer.String(),
+		strings.Join(tarCmd, " "),
 	)
 }
 
-func commandUPLOAD(r Remote, l Local, v bool) *exec.Cmd {
+func commandUPLOAD(r Remote, l Local, tgzFile string, v bool) *exec.Cmd {
 
 	u, _ := url.Parse(r.Server)
 	u.Path = path.Join(u.Path, r.Folder)
-
-	var buffer bytes.Buffer
-	buffer.WriteString(l.Folder)
-	buffer.WriteString(".tgz")
 
 	args := []string{"-c", "auth.conf"}
 	if v {
 		args = append(args, "-v")
 	}
-	args = append(args, buffer.String())
+	args = append(args, tgzFile)
 	args = append(args, u.String())
 
 	return exec.Command(
