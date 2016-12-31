@@ -94,7 +94,7 @@ func genConfig(a Auth) error {
 	buffer.WriteString(a.User)
 	buffer.WriteString(":")
 	buffer.WriteString(a.Pass)
-	buffer.WriteString('\n')
+	buffer.WriteString("\n")
 
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
