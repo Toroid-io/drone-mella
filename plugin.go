@@ -89,7 +89,7 @@ func (p Plugin) Exec() error {
 
 	genConfig(p.Auth)
 	cmds = append(cmds, commandTAR(p.Local, tgzFile.String()))
-	cmds = append(cmds, commandUPLOAD(p.Remote, p.Local, tgzFile.String(), p.Verbose))
+	cmds = append(cmds, commandUPLOAD(p.Remote, tgzFile.String(), p.Verbose))
 
 	// execute all commands in batch mode.
 	for _, cmd := range cmds {
@@ -133,7 +133,7 @@ func commandTAR(l Local, tgzFile string) *exec.Cmd {
 	)
 }
 
-func commandUPLOAD(r Remote, l Local, tgzFile string, v bool) *exec.Cmd {
+func commandUPLOAD(r Remote, tgzFile string, v bool) *exec.Cmd {
 
 	u, _ := url.Parse(r.Server)
 	u.Path = path.Join(u.Path, r.Folder)
