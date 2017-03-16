@@ -28,7 +28,7 @@ pipeline:
 
 `drone-mella` will put `local_folder/local_files` in a `.tgz` file named after the repository: `repoName_COMMIT-SHA.tgz` with `COMMIT-SHA` being the last 7 characters. If a tag hook is detected, drone will set `DRONE_TAG` and the file will be named: `repoName_TAG.tgz`.
 
-Then this compressed file will be uploaded to `server/remote_folder`, provided the credentials are correct.
+Then this compressed file will be uploaded to `server/remote_folder`, provided the credentials are correct **and that the remote folder already exists**
 
 ## Contibuting
 
