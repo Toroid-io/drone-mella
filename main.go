@@ -63,6 +63,11 @@ func main() {
 			Usage:  "repo name",
 			EnvVar: "DRONE_REPO_NAME",
 		},
+		cli.BoolTFlag{
+			Name:   "parentdir",
+			Usage:  "Include directory structure. Defualts to true",
+			EnvVar: "PLUGIN_PARENTDIR",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -77,7 +82,8 @@ func run(c *cli.Context) error {
 			Server: c.String("remote.server"),
 			Folder: c.String("remote.folder"),
 		},
-		Files: c.StringSlice("local.files"),
+		Files:     c.StringSlice("local.files"),
+		Parentdir: c.Bool("parentdir"),
 		Auth: Auth{
 			User: c.String("auth.user"),
 			Pass: c.String("auth.pass"),

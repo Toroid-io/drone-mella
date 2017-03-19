@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -33,11 +34,12 @@ type (
 
 	// Plugin defines the KiCad plugin parameters
 	Plugin struct {
-		Remote  Remote   // Remote configuration
-		Files   []string // Local files
-		Auth    Auth     // Authentification
-		Commit  Commit   // Commit information
-		Verbose bool     // Add -v to mella script
+		Remote    Remote   // Remote configuration
+		Files     []string // Local files
+		Parentdir bool     // Include dir structure
+		Auth      Auth     // Authentification
+		Commit    Commit   // Commit information
+		Verbose   bool     // Add -v to mella script
 	}
 )
 
@@ -71,19 +73,23 @@ func (p Plugin) Exec() error {
 	u.Path = path.Join(u.Path, "remote.php/webdav")
 	p.Remote.Server = u.String()
 
-	var tgzFile bytes.Buffer
-	tgzFile.WriteString(p.Commit.Repo)
-	tgzFile.WriteString("_")
+	var tarFile []string
+	tarFile = append(tarFile, p.Commit.Repo, "_")
 	if p.Commit.Tag != "" {
-		tgzFile.WriteString(p.Commit.Tag)
+		tarFile = append(tarFile, p.Commit.Tag)
 	} else {
-		tgzFile.WriteString(p.Commit.Sha[:7])
+		tarFile = append(tarFile, p.Commit.Sha[:7])
 	}
-	tgzFile.WriteString(".tgz")
+	tarFile = append(tarFile, ".tar")
+
+	var tgzFile = append(tarFile, ".gz")
 
 	genConfig(p.Auth)
-	cmds = append(cmds, commandTAR(p.Files, tgzFile.String()))
-	cmds = append(cmds, commandUPLOAD(p.Remote, tgzFile.String(), p.Verbose))
+	for i, file := range p.Files {
+		cmds = append(cmds, commandTAR(i, file, p.Parentdir, strings.Join(tarFile, "")))
+	}
+	cmds = append(cmds, commandGZIP(strings.Join(tarFile, "")))
+	cmds = append(cmds, commandUPLOAD(p.Remote, strings.Join(tgzFile, ""), p.Verbose))
 
 	// execute all commands in batch mode.
 	for _, cmd := range cmds {
@@ -111,19 +117,43 @@ func genConfig(a Auth) error {
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
-func commandTAR(f []string, tgzFile string) *exec.Cmd {
+func commandTAR(index int, f string, parentdir bool, tarFile string) *exec.Cmd {
 
-	tarCmd := []string{
-		"tar -czf",
-		tgzFile,
+	var tarCmd []string
+	var abs string
+
+	if !parentdir {
+		abs, _ = filepath.Abs(path.Dir(f))
+		tarCmd = append(tarCmd, "cd", abs, "&&")
 	}
-	tarCmd = append(tarCmd, f...)
+
+	if index == 0 {
+		tarCmd = append(tarCmd, "tar -cf")
+	} else {
+		tarCmd = append(tarCmd, "tar -uf")
+	}
+	abs, _ = filepath.Abs(tarFile)
+	tarCmd = append(tarCmd, abs)
+
+	if !parentdir {
+		tarCmd = append(tarCmd, path.Base(f))
+	} else {
+		tarCmd = append(tarCmd, f)
+	}
 
 	// Calling bash allows wildcard expansion in files
 	return exec.Command(
 		"/bin/bash",
 		"-c",
 		strings.Join(tarCmd, " "),
+	)
+}
+
+func commandGZIP(tarFile string) *exec.Cmd {
+
+	return exec.Command(
+		"gzip",
+		tarFile,
 	)
 }
 

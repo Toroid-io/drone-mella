@@ -6,6 +6,7 @@
 - `server`: OwnCloud server URL
 - `remote_folder`: Folder in `server` where to store the file
 - `files`: Array of files to be compressed.
+- `parentdir`: `true|false`. True if the directory structure should be conserved when compressing. Defaults to true.
 - `owncloud_username`, `owncloud_password`: Credentials for `server`. You are advised to use environment variables `OWNCLOUD_USERNAME` and `OWNCLOUD_PASSWORD` in order to hide your credentials.
 
 ## Example configuration
@@ -21,6 +22,7 @@ pipeline:
     remote_folder: "CREATE/THIS/BEFORE"
     files:
       - localFolder/*
+    parentdir: false
 ```
 
 ## Notes
