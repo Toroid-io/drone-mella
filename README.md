@@ -5,8 +5,7 @@
 
 - `server`: OwnCloud server URL
 - `remote_folder`: Folder in `server` where to store the file
-- `local_folder`: Folder where to search for `local_files` to be compressed.
-- `local_files`: Files in `local_folder` to be compressed.
+- `files`: Array of files to be compressed.
 - `owncloud_username`, `owncloud_password`: Credentials for `server`. You are advised to use environment variables `OWNCLOUD_USERNAME` and `OWNCLOUD_PASSWORD` in order to hide your credentials.
 
 ## Example configuration
@@ -20,13 +19,13 @@ pipeline:
     image: toroid/drone-mella
     server: https://owncloud.server.com
     remote_folder: "CREATE/THIS/BEFORE"
-    local_folder: "LocalFolder"
-    local_files: "*"
+    files:
+      - localFolder/*
 ```
 
 ## Notes
 
-`drone-mella` will put `local_folder/local_files` in a `.tgz` file named after the repository: `repoName_COMMIT-SHA.tgz` with `COMMIT-SHA` being the last 7 characters. If a tag hook is detected, drone will set `DRONE_TAG` and the file will be named: `repoName_TAG.tgz`.
+`drone-mella` will put `files` in a `.tgz` file named after the repository: `repoName_COMMIT-SHA.tgz` with `COMMIT-SHA` being the last 7 characters. If a tag hook is detected, drone will set `DRONE_TAG` and the file will be named: `repoName_TAG.tgz`.
 
 Then this compressed file will be uploaded to `server/remote_folder`, provided the credentials are correct **and that the remote folder already exists**
 

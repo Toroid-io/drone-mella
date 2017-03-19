@@ -18,12 +18,6 @@ type (
 		Folder string // Folder where to store files
 	}
 
-	// Local defines the local files parameters
-	Local struct {
-		Folder string // Local folder to upload
-		Files  string // Local files to upload
-	}
-
 	// Auth handles authentification
 	Auth struct {
 		User string // ownCloud username
@@ -39,11 +33,11 @@ type (
 
 	// Plugin defines the KiCad plugin parameters
 	Plugin struct {
-		Remote  Remote // Remote configuration
-		Local   Local  // Local configuration
-		Auth    Auth   // Authentification
-		Commit  Commit // Commit information
-		Verbose bool   // Add -v to mella script
+		Remote  Remote   // Remote configuration
+		Files   []string // Local files
+		Auth    Auth     // Authentification
+		Commit  Commit   // Commit information
+		Verbose bool     // Add -v to mella script
 	}
 )
 
@@ -60,7 +54,7 @@ func (p Plugin) Exec() error {
 		return fmt.Errorf("No password provided!")
 	}
 
-	if p.Local.Folder == "" && p.Local.Files == "" {
+	if len(p.Files) == 0 {
 		return fmt.Errorf("No local files provided!")
 	}
 
@@ -88,7 +82,7 @@ func (p Plugin) Exec() error {
 	tgzFile.WriteString(".tgz")
 
 	genConfig(p.Auth)
-	cmds = append(cmds, commandTAR(p.Local, tgzFile.String()))
+	cmds = append(cmds, commandTAR(p.Files, tgzFile.String()))
 	cmds = append(cmds, commandUPLOAD(p.Remote, tgzFile.String(), p.Verbose))
 
 	// execute all commands in batch mode.
@@ -117,13 +111,13 @@ func genConfig(a Auth) error {
 	return ioutil.WriteFile("auth.conf", buffer.Bytes(), 0777)
 }
 
-func commandTAR(l Local, tgzFile string) *exec.Cmd {
+func commandTAR(f []string, tgzFile string) *exec.Cmd {
 
 	tarCmd := []string{
 		"tar -czf",
 		tgzFile,
-		path.Join(l.Folder, l.Files),
 	}
+	tarCmd = append(tarCmd, f...)
 
 	// Calling bash allows wildcard expansion in files
 	return exec.Command(
