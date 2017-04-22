@@ -34,6 +34,11 @@ func main() {
 			EnvVar: "PLUGIN_FILES",
 		},
 		cli.StringFlag{
+			Name:   "name",
+			Usage:  "suffix for compressed file",
+			EnvVar: "PLUGIN_NAME",
+		},
+		cli.StringFlag{
 			Name:   "auth.user",
 			Usage:  "ownCloud username",
 			EnvVar: "OWNCLOUD_USERNAME",
@@ -83,6 +88,7 @@ func run(c *cli.Context) error {
 			Folder: c.String("remote.folder"),
 		},
 		Files:     c.StringSlice("local.files"),
+		Name:      c.String("name"),
 		Parentdir: c.Bool("parentdir"),
 		Auth: Auth{
 			User: c.String("auth.user"),
