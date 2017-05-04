@@ -37,3 +37,15 @@ Then this compressed file will be uploaded to `server/remote_folder`, provided t
 ## Contibuting
 
 Don't hesitate to submit issues or pull requests.
+
+## License
+
+Copyright (c)2017 by [Andrés Manelli](https://github.com/andresmanelli)
+
+This script comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions. See CC BY-NC-SA 4.0 for details.
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+[mella](https://github.com/florianbeer/mella) is made available under
+the CC BY-NC-SA 4.0 license. Copyright (c) by [Florian Beer](https://github.com/florianbeer)
