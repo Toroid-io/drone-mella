@@ -1,6 +1,6 @@
 [![Build Status](https://ci.toroid.io/api/badges/drone-plugins/drone-mella/status.svg)](https://ci.toroid.io/drone-plugins/drone-mella)
 ## drone-mella
-`drone-mella` is a [drone](https://github.com/drone/drone) plugin for uploading files to [OwnCloud](https://owncloud.org/). It is baed on [mella](https://github.com/florianbeer/mella).
+`drone-mella` is a [drone](https://github.com/drone/drone) plugin for uploading files to [OwnCloud](https://owncloud.org/). It is based on [mella](https://github.com/florianbeer/mella).
 
 ## Options
 
@@ -34,7 +34,7 @@ pipeline:
 
 Then this compressed file will be uploaded to `server/remote_folder`, provided the credentials are correct **and that the remote folder already exists**
 
-## Contibuting
+## Contributing
 
 Don't hesitate to submit issues or pull requests.
 
