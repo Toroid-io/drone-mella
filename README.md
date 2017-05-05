@@ -1,4 +1,4 @@
-[![Build Status](https://ci.toroid.io/api/badges/drone-plugins/drone-mella/status.svg)](https://ci.toroid.io/drone-plugins/drone-mella)
+[![Build Status](https://bianca.toroid.io/api/badges/Toroid-io/drone-mella/status.svg)](https://bianca.toroid.io/Toroid-io/drone-mella)
 ## drone-mella
 `drone-mella` is a [drone](https://github.com/drone/drone) plugin for uploading files to [OwnCloud](https://owncloud.org/). It is based on [mella](https://github.com/florianbeer/mella).
 
