@@ -36,7 +36,7 @@ type (
 	Plugin struct {
 		Remote    Remote   // Remote configuration
 		Files     []string // Local files
-		Name      string   // Suffix
+		TgzName   string   // Suffix
 		Parentdir bool     // Include dir structure
 		Auth      Auth     // Authentification
 		Commit    Commit   // Commit information
@@ -76,8 +76,8 @@ func (p Plugin) Exec() error {
 
 	var tarFile []string
 	tarFile = append(tarFile, p.Commit.Repo, "_")
-	if p.Name != "" {
-		tarFile = append(tarFile, p.Name)
+	if p.TgzName != "" {
+		tarFile = append(tarFile, p.TgzName)
 	} else if p.Commit.Tag != "" {
 		tarFile = append(tarFile, p.Commit.Tag)
 	} else {

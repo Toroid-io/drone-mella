@@ -34,9 +34,9 @@ func main() {
 			EnvVar: "PLUGIN_FILES",
 		},
 		cli.StringFlag{
-			Name:   "name",
+			Name:   "tgz_name",
 			Usage:  "suffix for compressed file",
-			EnvVar: "PLUGIN_NAME",
+			EnvVar: "PLUGIN_TGZ_NAME",
 		},
 		cli.StringFlag{
 			Name:   "auth.user",
@@ -88,7 +88,7 @@ func run(c *cli.Context) error {
 			Folder: c.String("remote.folder"),
 		},
 		Files:     c.StringSlice("local.files"),
-		Name:      c.String("name"),
+		TgzName:   c.String("tgz_name"),
 		Parentdir: c.Bool("parentdir"),
 		Auth: Auth{
 			User: c.String("auth.user"),
