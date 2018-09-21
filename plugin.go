@@ -15,14 +15,14 @@ import (
 type (
 	// Remote defines the server parameters
 	Remote struct {
-		Server string // URL of ownCloud server. No /remote[...]
+		Server string // URL of server. No /remote[...]
 		Folder string // Folder where to store files
 	}
 
 	// Auth handles authentification
 	Auth struct {
-		User string // ownCloud username
-		Pass string // ownCloud password
+		User string // username
+		Pass string // password
 	}
 
 	// Commit handles commit information

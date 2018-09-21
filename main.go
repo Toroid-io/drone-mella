@@ -20,7 +20,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "remote.server",
-			Usage:  "ownCloud server",
+			Usage:  "server",
 			EnvVar: "PLUGIN_SERVER",
 		},
 		cli.StringFlag{
@@ -40,13 +40,13 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:   "auth.user",
-			Usage:  "ownCloud username",
-			EnvVar: "OWNCLOUD_USERNAME",
+			Usage:  "mella username",
+			EnvVar: "MELLA_USERNAME",
 		},
 		cli.StringFlag{
 			Name:   "auth.pass",
-			Usage:  "ownCloud password",
-			EnvVar: "OWNCLOUD_PASSWORD",
+			Usage:  "mella password",
+			EnvVar: "MELLA_PASSWORD",
 		},
 		cli.BoolFlag{
 			Name:   "verbose",
