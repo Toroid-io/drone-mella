@@ -77,8 +77,9 @@ func (p Plugin) Exec() error {
 	var tarFile []string
 	tarFile = append(tarFile, p.Commit.Repo, "_")
 	if p.TgzName != "" {
-		tarFile = append(tarFile, p.TgzName)
-	} else if p.Commit.Tag != "" {
+		tarFile = append(tarFile, p.TgzName, "_")
+	}
+	if p.Commit.Tag != "" {
 		tarFile = append(tarFile, p.Commit.Tag)
 	} else {
 		tarFile = append(tarFile, p.Commit.Sha[:7])
