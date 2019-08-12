@@ -38,6 +38,7 @@ type (
 		Files     []string // Local files
 		TgzName   string   // Suffix
 		Parentdir bool     // Include dir structure
+		Sha1sum   bool     // Create SHA1 file
 		Auth      Auth     // Authentification
 		Commit    Commit   // Commit information
 		Verbose   bool     // Add -v to mella script
@@ -87,12 +88,17 @@ func (p Plugin) Exec() error {
 	tarFile = append(tarFile, ".tar")
 
 	var tgzFile = append(tarFile, ".gz")
+	var shaFile = append(tgzFile, ".sha1sum")
 
 	genConfig(p.Auth)
 	for i, file := range p.Files {
 		cmds = append(cmds, commandTAR(i, file, p.Parentdir, strings.Join(tarFile, "")))
 	}
 	cmds = append(cmds, commandGZIP(strings.Join(tarFile, "")))
+	if p.Sha1sum {
+		cmds = append(cmds, commandSHA1SUM(strings.Join(tgzFile, "")))
+		cmds = append(cmds, commandUPLOAD(p.Remote, strings.Join(shaFile, ""), p.Verbose))
+	}
 	cmds = append(cmds, commandUPLOAD(p.Remote, strings.Join(tgzFile, ""), p.Verbose))
 
 	// execute all commands in batch mode.
@@ -158,6 +164,21 @@ func commandGZIP(tarFile string) *exec.Cmd {
 	return exec.Command(
 		"gzip",
 		tarFile,
+	)
+}
+
+func commandSHA1SUM(tgzFile string) *exec.Cmd {
+
+	var shaFile []string
+	shaFile = append(shaFile, tgzFile, ".sha1sum")
+
+	var shaCmd []string
+	shaCmd = append(shaCmd, "sha1sum", tgzFile, ">", strings.Join(shaFile, ""))
+
+	return exec.Command(
+		"/bin/bash",
+		"-c",
+		strings.Join(shaCmd, " "),
 	)
 }
 
