@@ -9,6 +9,7 @@
 - `files`: Array of files to be compressed.
 - `tgz_name`: Suffix for the compressed file.
 - `parentdir`: `true|false`. True if the directory structure should be conserved when compressing. Defaults to true.
+- `sha1sum`: `true|false`. True if a hash file should be created alongside the compressed file. Defaults to true
 - `mella_username`, `mella_password`: Credentials for `server`. You are advised to use environment variables `OWNCLOUD_USERNAME` and `OWNCLOUD_PASSWORD` in order to hide your credentials.
 
 ## Example configuration

@@ -73,6 +73,11 @@ func main() {
 			Usage:  "Include directory structure. Defualts to true",
 			EnvVar: "PLUGIN_PARENTDIR",
 		},
+		cli.BoolTFlag{
+			Name:   "sha1sum",
+			Usage:  "Create sha1sum file. Defaults to true",
+			EnvVar: "PLUGIN_SHA1SUM",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -90,6 +95,7 @@ func run(c *cli.Context) error {
 		Files:     c.StringSlice("local.files"),
 		TgzName:   c.String("tgz_name"),
 		Parentdir: c.Bool("parentdir"),
+		Sha1sum:   c.Bool("sha1sum"),
 		Auth: Auth{
 			User: c.String("auth.user"),
 			Pass: c.String("auth.pass"),
