@@ -15,7 +15,19 @@ pipeline:
   latest:
     image: plugins/docker
     repo: toroid/drone-mella
+    tags: latest
     when:
       branch: master
-      event: push
+      event: deployment
+      environment: production
+    secrets: [docker_username, docker_password]
+
+  test:
+    image: plugins/docker
+    repo: toroid/drone-mella
+    tags: ${DRONE_DEPLOY_TO}
+    when:
+      event: deployment
+      environment:
+        exclude: production
     secrets: [docker_username, docker_password]
