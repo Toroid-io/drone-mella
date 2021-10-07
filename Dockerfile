@@ -1,4 +1,4 @@
-FROM bravissimolabs/alpine-git
+FROM alpine/git
 
 RUN apk update --quiet && apk add tar && \
     git clone https://github.com/florianbeer/mella && \
