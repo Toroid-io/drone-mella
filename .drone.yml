@@ -4,7 +4,7 @@ workspace:
 
 pipeline:
   buildgo:
-    image: golang
+    image: golang:1.10
     environment:
       - CGO_ENABLED=0
       - GOOS=linux
