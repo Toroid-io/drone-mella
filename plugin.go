@@ -153,7 +153,7 @@ func commandTAR(index int, f string, parentdir bool, tarFile string) *exec.Cmd {
 
 	// Calling bash allows wildcard expansion in files
 	return exec.Command(
-		"/bin/bash",
+		"/bin/sh",
 		"-c",
 		strings.Join(tarCmd, " "),
 	)
@@ -176,7 +176,7 @@ func commandSHA1SUM(tgzFile string) *exec.Cmd {
 	shaCmd = append(shaCmd, "sha1sum", tgzFile, ">", strings.Join(shaFile, ""))
 
 	return exec.Command(
-		"/bin/bash",
+		"/bin/sh",
 		"-c",
 		strings.Join(shaCmd, " "),
 	)
